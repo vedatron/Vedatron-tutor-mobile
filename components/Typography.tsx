@@ -1,7 +1,7 @@
 
 import React from "react"
 import { StyleProp, Text, TextProps, TextStyle } from "react-native"
-
+import {cssInterop} from "nativewind"
 
 type TypographyProps = TextProps & {
   className?: string
@@ -11,6 +11,7 @@ type TypographyProps = TextProps & {
 
 export const Typography = ({ className, style, ...props }: TypographyProps) => {
   return (
+   
     <Text
       {...props}
       style={style}

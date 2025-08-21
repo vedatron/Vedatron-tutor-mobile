@@ -1,131 +1,360 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native"
-import { router } from "expo-router"
-import { Card } from "../../../components/ui/Card"
-import { Plus, Users, Play, BarChart3, Edit } from "lucide-react-native"
+"use client"
 
-export default function TeacherCoursesScreen() {
-  const courses = [
+import { useState } from "react"
+import { View, ScrollView, RefreshControl, SafeAreaView, TouchableOpacity, Modal, TextInput } from "react-native"
+import { Typography } from "@/components/Typography"
+
+export default function ClassManagement() {
+  const [refreshing, setRefreshing] = useState(false)
+  const [activeTab, setActiveTab] = useState<"live" | "recorded" | "scheduled">("live")
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showResourceModal, setShowResourceModal] = useState(false)
+  const [selectedClass, setSelectedClass] = useState<any>(null)
+
+  const onRefresh = () => {
+    setRefreshing(true)
+    setTimeout(() => setRefreshing(false), 2000)
+  }
+
+  const liveClasses = [
     {
-      id: "1",
+      id: 1,
       title: "Advanced Mathematics",
-      students: 156,
-      lessons: 24,
-      revenue: 45000,
-      rating: 4.8,
-      status: "active",
-      thumbnail: "https://via.placeholder.com/100x60",
+      subject: "Mathematics",
+      time: "10:00 AM - 11:30 AM",
+      date: "Today",
+      students: 25,
+      maxStudents: 30,
+      status: "ongoing",
+      duration: "1h 30m",
+      resources: 3,
+      attendance: 23,
     },
     {
-      id: "2",
+      id: 2,
       title: "Physics Fundamentals",
-      students: 89,
-      lessons: 18,
-      revenue: 28000,
-      rating: 4.6,
-      status: "active",
-      thumbnail: "https://via.placeholder.com/100x60",
-    },
-    {
-      id: "3",
-      title: "Chemistry Basics",
-      students: 67,
-      lessons: 15,
-      revenue: 22000,
-      rating: 4.9,
-      status: "draft",
-      thumbnail: "https://via.placeholder.com/100x60",
+      subject: "Physics",
+      time: "2:00 PM - 3:00 PM",
+      date: "Today",
+      students: 18,
+      maxStudents: 25,
+      status: "scheduled",
+      duration: "1h",
+      resources: 5,
+      attendance: 0,
     },
   ]
 
-  return (
-    <ScrollView className="flex-1 bg-surface-50">
-      <View className="px-6 pt-12 pb-6">
-        <View className="flex-row items-center justify-between mb-6">
-          <Text className="text-2xl font-bold text-surface-900">My Courses</Text>
-          <TouchableOpacity
-            onPress={() => router.push("/(teacher)/create-course/index")}
-            className="bg-green-600 px-4 py-2 rounded-full flex-row items-center"
+  const recordedClasses = [
+    {
+      id: 3,
+      title: "Chemistry Basics",
+      subject: "Chemistry",
+      duration: "45 minutes",
+      views: 156,
+      likes: 89,
+      uploadDate: "2 days ago",
+      resources: 4,
+      size: "2.3 GB",
+    },
+    {
+      id: 4,
+      title: "Organic Chemistry",
+      subject: "Chemistry",
+      duration: "1h 15m",
+      views: 203,
+      likes: 145,
+      uploadDate: "1 week ago",
+      resources: 7,
+      size: "3.1 GB",
+    },
+  ]
+
+  const scheduledClasses = [
+    {
+      id: 5,
+      title: "Calculus Workshop",
+      subject: "Mathematics",
+      time: "4:00 PM - 5:30 PM",
+      date: "Tomorrow",
+      students: 12,
+      maxStudents: 20,
+      status: "scheduled",
+      duration: "1h 30m",
+    },
+  ]
+
+  const resources = [
+    { id: 1, name: "Chapter 5 Notes.pdf", type: "PDF", size: "2.3 MB", downloads: 45 },
+    { id: 2, name: "Practice Problems.docx", type: "DOC", size: "1.8 MB", downloads: 32 },
+    { id: 3, name: "Formula Sheet.png", type: "IMG", size: "856 KB", downloads: 67 },
+  ]
+
+  const renderClassCard = (classItem: any, type: string) => (
+    <View key={classItem.id} className="bg-card p-4 rounded-xl border border-border mb-4">
+      <View className="flex-row justify-between items-start mb-3">
+        <View className="flex-1">
+          <Typography className="text-lg font-semibold text-foreground">{classItem.title}</Typography>
+          <Typography className="text-sm text-muted-foreground mt-1">{classItem.subject}</Typography>
+
+          {type === "live" || type === "scheduled" ? (
+            <View className="flex-row items-center mt-2">
+              <Typography className="text-sm text-muted-foreground">
+                {classItem.date} • {classItem.time}
+              </Typography>
+            </View>
+          ) : (
+            <View className="flex-row items-center mt-2">
+              <Typography className="text-sm text-muted-foreground">
+                {classItem.duration} • {classItem.views} views • {classItem.uploadDate}
+              </Typography>
+            </View>
+          )}
+        </View>
+
+        <View
+          className={`px-3 py-1 rounded-full ${
+            classItem.status === "ongoing"
+              ? "bg-green-100"
+              : classItem.status === "scheduled"
+                ? "bg-blue-100"
+                : "bg-gray-100"
+          }`}
+        >
+          <Typography
+            className={`text-xs font-medium ${
+              classItem.status === "ongoing"
+                ? "text-green-700"
+                : classItem.status === "scheduled"
+                  ? "text-blue-700"
+                  : "text-gray-700"
+            }`}
           >
-            <Plus size={16} color="white" />
-            <Text className="text-white font-medium ml-1">Create</Text>
+            {classItem.status || "recorded"}
+          </Typography>
+        </View>
+      </View>
+
+      {/* Stats Row */}
+      <View className="flex-row justify-between items-center mb-4">
+        {type === "recorded" ? (
+          <>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">{classItem.views}</Typography>
+              <Typography className="text-xs text-muted-foreground">Views</Typography>
+            </View>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">{classItem.likes}</Typography>
+              <Typography className="text-xs text-muted-foreground">Likes</Typography>
+            </View>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">{classItem.resources}</Typography>
+              <Typography className="text-xs text-muted-foreground">Resources</Typography>
+            </View>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">{classItem.size}</Typography>
+              <Typography className="text-xs text-muted-foreground">Size</Typography>
+            </View>
+          </>
+        ) : (
+          <>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">
+                {classItem.students}/{classItem.maxStudents}
+              </Typography>
+              <Typography className="text-xs text-muted-foreground">Students</Typography>
+            </View>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">{classItem.duration}</Typography>
+              <Typography className="text-xs text-muted-foreground">Duration</Typography>
+            </View>
+            <View className="items-center">
+              <Typography className="text-lg font-bold text-foreground">{classItem.resources || 0}</Typography>
+              <Typography className="text-xs text-muted-foreground">Resources</Typography>
+            </View>
+            {classItem.attendance !== undefined && (
+              <View className="items-center">
+                <Typography className="text-lg font-bold text-foreground">{classItem.attendance}</Typography>
+                <Typography className="text-xs text-muted-foreground">Present</Typography>
+              </View>
+            )}
+          </>
+        )}
+      </View>
+
+      {/* Action Buttons */}
+      <View className="flex-row gap-2">
+        {type === "live" && classItem.status === "ongoing" && (
+          <TouchableOpacity className="flex-1 bg-green-600 py-3 rounded-lg">
+            <Typography className="text-center text-white font-medium">Join Live</Typography>
+          </TouchableOpacity>
+        )}
+        {type === "live" && classItem.status === "scheduled" && (
+          <TouchableOpacity className="flex-1 bg-primary py-3 rounded-lg">
+            <Typography className="text-center text-primary-foreground font-medium">Start Class</Typography>
+          </TouchableOpacity>
+        )}
+        {type === "recorded" && (
+          <TouchableOpacity className="flex-1 bg-primary py-3 rounded-lg">
+            <Typography className="text-center text-primary-foreground font-medium">View Recording</Typography>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          className="flex-1 bg-muted py-3 rounded-lg"
+          onPress={() => {
+            setSelectedClass(classItem)
+            setShowResourceModal(true)
+          }}
+        >
+          <Typography className="text-center text-foreground font-medium">Resources</Typography>
+        </TouchableOpacity>
+        <TouchableOpacity className="px-4 py-3 bg-muted rounded-lg">
+          <Typography className="text-foreground">⋮</Typography>
+        </TouchableOpacity>
+      </View>
+    </View>
+  )
+
+  return (
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="px-4 py-6">
+        <View className="flex-row justify-between items-center mb-6">
+          <Typography className="text-2xl font-bold text-foreground">Class Management</Typography>
+          <TouchableOpacity className="bg-primary px-4 py-2 rounded-lg" onPress={() => setShowCreateModal(true)}>
+            <Typography className="text-primary-foreground font-medium">+ Create</Typography>
           </TouchableOpacity>
         </View>
 
-        {/* Course Stats */}
-        <View className="flex-row justify-between mb-6">
-          <Card className="flex-1 mr-2 items-center py-4">
-            <Text className="text-2xl font-bold text-green-600">{courses.length}</Text>
-            <Text className="text-surface-600 text-sm">Total Courses</Text>
-          </Card>
-          <Card className="flex-1 mx-1 items-center py-4">
-            <Text className="text-2xl font-bold text-blue-600">
-              {courses.reduce((sum, course) => sum + course.students, 0)}
-            </Text>
-            <Text className="text-surface-600 text-sm">Total Students</Text>
-          </Card>
-          <Card className="flex-1 ml-2 items-center py-4">
-            <Text className="text-2xl font-bold text-yellow-600">
-              ₹{courses.reduce((sum, course) => sum + course.revenue, 0).toLocaleString()}
-            </Text>
-            <Text className="text-surface-600 text-sm">Total Revenue</Text>
-          </Card>
-        </View>
-
-        {/* Courses List */}
-        <View>
-          {courses.map((course) => (
-            <TouchableOpacity key={course.id} onPress={() => router.push(`/(teacher)/course/${course.id}`)}>
-              <Card className="mb-4">
-                <View className="flex-row">
-                  <View className="w-20 h-14 bg-surface-200 rounded-lg mr-4" />
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between mb-2">
-                      <Text className="font-semibold text-surface-900 flex-1">{course.title}</Text>
-                      <View
-                        className={`px-2 py-1 rounded-full ${
-                          course.status === "active" ? "bg-green-100" : "bg-yellow-100"
-                        }`}
-                      >
-                        <Text
-                          className={`text-xs font-medium ${
-                            course.status === "active" ? "text-green-600" : "text-yellow-600"
-                          }`}
-                        >
-                          {course.status.toUpperCase()}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View className="flex-row items-center mb-3">
-                      <View className="flex-row items-center mr-4">
-                        <Users size={14} color="#6b7280" />
-                        <Text className="text-surface-600 text-sm ml-1">{course.students} students</Text>
-                      </View>
-                      <View className="flex-row items-center mr-4">
-                        <Play size={14} color="#6b7280" />
-                        <Text className="text-surface-600 text-sm ml-1">{course.lessons} lessons</Text>
-                      </View>
-                      <Text className="text-surface-600 text-sm">★ {course.rating}</Text>
-                    </View>
-
-                    <View className="flex-row items-center justify-between">
-                      <Text className="font-bold text-green-600">₹{course.revenue.toLocaleString()}</Text>
-                      <View className="flex-row">
-                        <TouchableOpacity className="bg-surface-100 p-2 rounded-full mr-2">
-                          <BarChart3 size={16} color="#6b7280" />
-                        </TouchableOpacity>
-                        <TouchableOpacity className="bg-green-100 p-2 rounded-full">
-                          <Edit size={16} color="#10b981" />
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </Card>
+        {/* Tab Navigation */}
+        <View className="flex-row bg-muted rounded-lg p-1 mb-6">
+          {[
+            { key: "live", label: "Live Classes" },
+            { key: "recorded", label: "Recorded" },
+            { key: "scheduled", label: "Scheduled" },
+          ].map((tab) => (
+            <TouchableOpacity
+              key={tab.key}
+              className={`flex-1 py-2 rounded-md ${activeTab === tab.key ? "bg-background" : ""}`}
+              onPress={() => setActiveTab(tab.key as any)}
+            >
+              <Typography
+                className={`text-center text-sm font-medium ${
+                  activeTab === tab.key ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {tab.label}
+              </Typography>
             </TouchableOpacity>
           ))}
         </View>
       </View>
-    </ScrollView>
+
+      <ScrollView
+        className="flex-1 px-4"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+        {activeTab === "live" && liveClasses.map((classItem) => renderClassCard(classItem, "live"))}
+        {activeTab === "recorded" && recordedClasses.map((classItem) => renderClassCard(classItem, "recorded"))}
+        {activeTab === "scheduled" && scheduledClasses.map((classItem) => renderClassCard(classItem, "scheduled"))}
+      </ScrollView>
+
+      {/* Create Class Modal */}
+      <Modal visible={showCreateModal} transparent animationType="slide">
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-card rounded-t-3xl p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Typography className="text-xl font-semibold text-foreground">Create New Class</Typography>
+              <TouchableOpacity onPress={() => setShowCreateModal(false)}>
+                <Typography className="text-primary">Cancel</Typography>
+              </TouchableOpacity>
+            </View>
+
+            <View className="gap-4">
+              <View>
+                <Typography className="text-sm font-medium text-foreground mb-2">Class Title</Typography>
+                <TextInput
+                  className="bg-muted p-3 rounded-lg text-foreground"
+                  placeholder="Enter class title"
+                  placeholderTextColor="#666"
+                />
+              </View>
+
+              <View>
+                <Typography className="text-sm font-medium text-foreground mb-2">Subject</Typography>
+                <TextInput
+                  className="bg-muted p-3 rounded-lg text-foreground"
+                  placeholder="Select subject"
+                  placeholderTextColor="#666"
+                />
+              </View>
+
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <Typography className="text-sm font-medium text-foreground mb-2">Date</Typography>
+                  <TextInput
+                    className="bg-muted p-3 rounded-lg text-foreground"
+                    placeholder="Select date"
+                    placeholderTextColor="#666"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Typography className="text-sm font-medium text-foreground mb-2">Time</Typography>
+                  <TextInput
+                    className="bg-muted p-3 rounded-lg text-foreground"
+                    placeholder="Select time"
+                    placeholderTextColor="#666"
+                  />
+                </View>
+              </View>
+
+              <View className="flex-row gap-3 mt-4">
+                <TouchableOpacity className="flex-1 bg-primary py-3 rounded-lg">
+                  <Typography className="text-center text-primary-foreground font-medium">Create Live Class</Typography>
+                </TouchableOpacity>
+                <TouchableOpacity className="flex-1 bg-muted py-3 rounded-lg">
+                  <Typography className="text-center text-foreground font-medium">Schedule Later</Typography>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Resources Modal */}
+      <Modal visible={showResourceModal} transparent animationType="slide">
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-card rounded-t-3xl p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Typography className="text-xl font-semibold text-foreground">
+                Resources - {selectedClass?.title}
+              </Typography>
+              <TouchableOpacity onPress={() => setShowResourceModal(false)}>
+                <Typography className="text-primary">Close</Typography>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity className="bg-primary py-3 rounded-lg mb-4">
+              <Typography className="text-center text-primary-foreground font-medium">+ Upload Resource</Typography>
+            </TouchableOpacity>
+
+            {resources.map((resource) => (
+              <View key={resource.id} className="bg-muted p-4 rounded-lg mb-3">
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-1">
+                    <Typography className="text-sm font-medium text-foreground">{resource.name}</Typography>
+                    <Typography className="text-xs text-muted-foreground mt-1">
+                      {resource.type} • {resource.size} • {resource.downloads} downloads
+                    </Typography>
+                  </View>
+                  <TouchableOpacity className="ml-3">
+                    <Typography className="text-primary">⋮</Typography>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   )
 }

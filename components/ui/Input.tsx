@@ -48,7 +48,7 @@ export const Input: React.FC<InputProps> = ({
     <View className={cn("mb-4", className)}>
       {label && (
         <Text className={cn(
-          "text-gray-900 font-medium mb-2",
+          "text-gray-900 font-bold font-poppins mb-2",
           error && "text-red-500"
         )}>
           {label}

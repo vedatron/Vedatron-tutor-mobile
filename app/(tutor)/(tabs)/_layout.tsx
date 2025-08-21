@@ -15,6 +15,7 @@ export default function TeacherTabsLayout() {
           paddingBottom: 8,
           paddingTop: 8,
           height: 80,
+          position: "relative",
         },
       }}
     >

@@ -61,15 +61,15 @@ export default function LoginScreen() {
           {/* Header */}
           <View className="mb-6 items-center">
             <View className="w-20 h-20 bg-[--card-background-color] rounded-full items-center justify-center mb-2 shadow-lg">
-              <Image source={{
-               uri: require("@/assets/images/icon.png")
-              }}
+              <Image source={
+                 require("@/assets/images/icon.png")
+              }
                 contentFit="contain"
                 transition={1000}
                 alt="Vedatron Logo"
                 className="w-16 h-16 overflow-hidden "
                 style={{ width: 64, height: 64 }}
-                />
+              />
             </View>
             <Typography className="text-4xl font-bold text-center text-[--text-color] mb-2">Vedatron</Typography>
             {/* <Typography className="text-white/80 text-center text-lg">Your learning journey starts here</Text> */}
@@ -79,23 +79,23 @@ export default function LoginScreen() {
 
           {/* Role Selection */}
 
-          <View className="flex-row w-full justify-center ">
+          <View className="flex-row w-full justify-center bg-[--card-background-color] rounded-2xl p-1 mb-6 shadow">
             {roles.map((role) => (
               <TouchableOpacity
                 key={role.key}
                 onPress={() => changeRole(role.key as any)}
-                className={`flex-1 m-auto max-w-[170px] py-4 px-6  rounded-2xl border-2 items-center ${selectedRole === role.key ? "border-[--primary-color] bg-[--primary-color]" : "border-gray-900/50 bg-[--card-backgound-color]"
+                className={`flex-1 m-auto max-w-[170px] py-3 px-6  rounded-2xl  items-center ${selectedRole === role.key ? "border-[--primary-color] bg-[--primary-color]" : "border-gray-900/50 bg-[--card-backgound-color]"
                   }`}
 
 
               >
-                <MaterialIcons
+                {/* <MaterialIcons
                   name={role.icon as any}
                   size={28}
                   color={selectedRole === role.key ? "white" : "#6b7280"}
-                  />
+                /> */}
                 <Typography
-                  className={`text-center font-semibold  ${selectedRole === role.key ? "text-white" : "text-[--nav-text-color]"
+                  className={`text-center text-[15px] font-bold  ${selectedRole === role.key ? "text-white" : "text-[--nav-text-color]"
                     }`}
                 >
                   {role.label}
@@ -108,7 +108,7 @@ export default function LoginScreen() {
 
           {/* Login Form */}
           <View className="mt-4">
-            <Typography className="text-2xl font-bold text-[--nav-text-color] mb-6 text-center">Welcome Back</Typography>
+            <Typography className="text-[--nav-text-color] mb-6 text-center">Sign in as {selectedRole}</Typography>
 
             <View className="space-y-4">
               <Input
@@ -138,7 +138,7 @@ export default function LoginScreen() {
                 onPress={handleLogin}
                 // loading={isLoading}
                 className="mt-6"
-                disabled={!email || !password} 
+                disabled={!email || !password}
               />
             </View>
 
@@ -152,19 +152,22 @@ export default function LoginScreen() {
           </View>
 
           {/* Sign Up Link */}
-          <Link
-            href="/(auth)/register"
-            className="mt-8 py-3"
-           
-          >
-            <Typography className="text-[--nav-text-color] text-center text-lg">
-              Don't have an account? <Typography className="font-bold underline  text-[--primary-color]">Sign Up</Typography>
+          <View className="flex-row justify-center mt-8 py-3">
+            <Typography className="text-[--nav-text-color] text-lg">
+              Don't have an account?{" "}
             </Typography>
-          </Link>
+            <Link href="/(auth)/register" asChild>
+              <TouchableOpacity>
+                <Typography className="font-bold underline text-[--primary-color] text-lg">
+                  Sign Up
+                </Typography>
+              </TouchableOpacity>
+            </Link>
+          </View>
+
         </View>
       </ScrollView>
     </View>
   )
 }
-
 

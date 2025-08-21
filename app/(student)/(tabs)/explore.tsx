@@ -1,22 +1,16 @@
 "use client"
 
-import React, { useState } from "react"
-import { View, ScrollView, SafeAreaView, RefreshControl, TouchableOpacity, TextInput, Image } from "react-native"
-import { Typography } from "@/components/Typography"
+import { useState } from "react"
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { Ionicons } from "@expo/vector-icons"
+import { Card } from "@/components/ui/Card"
 
-export default function CourseExplore() {
-  const [refreshing, setRefreshing] = useState(false)
+export default function ExploreScreen() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
-  const [selectedFilter, setSelectedFilter] = useState("Popular")
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true)
-    setTimeout(() => setRefreshing(false), 2000)
-  }, [])
-
-  const categories = ["All", "Mathematics", "Science", "English", "History", "Programming"]
-  const filters = ["Popular", "Latest", "Rating", "Price"]
+  const categories = ["All", "Mathematics", "Physics", "Chemistry", "Biology", "English"]
 
   const courses = [
     {
@@ -24,56 +18,64 @@ export default function CourseExplore() {
       title: "Advanced Mathematics",
       instructor: "Dr. Sarah Johnson",
       rating: 4.8,
-      students: 1250,
-      price: 299,
-      duration: "12 weeks",
-      level: "Advanced",
-      image: "/mathematics-course.png",
+      students: 1234,
+      price: "₹2,999",
+      thumbnail: "📐",
       category: "Mathematics",
-      progress: 0,
     },
     {
       id: 2,
       title: "Physics Fundamentals",
       instructor: "Prof. Michael Chen",
       rating: 4.9,
-      students: 980,
-      price: 249,
-      duration: "10 weeks",
-      level: "Intermediate",
-      image: "/physics-course.png",
-      category: "Science",
-      progress: 35,
+      students: 856,
+      price: "₹3,499",
+      thumbnail: "⚛️",
+      category: "Physics",
     },
     {
       id: 3,
-      title: "Creative Writing",
-      instructor: "Emma Thompson",
+      title: "Organic Chemistry",
+      instructor: "Dr. Emily Davis",
       rating: 4.7,
-      students: 750,
-      price: 199,
-      duration: "8 weeks",
-      level: "Beginner",
-      image: "/writing-course.png",
-      category: "English",
-      progress: 0,
+      students: 642,
+      price: "₹2,799",
+      thumbnail: "🧪",
+      category: "Chemistry",
     },
     {
       id: 4,
-      title: "Web Development Bootcamp",
-      instructor: "Alex Rodriguez",
-      rating: 4.9,
-      students: 2100,
-      price: 399,
-      duration: "16 weeks",
-      level: "Intermediate",
-      image: "/programming-course.png",
-      category: "Programming",
-      progress: 0,
+      title: "Cell Biology",
+      instructor: "Dr. Robert Wilson",
+      rating: 4.6,
+      students: 789,
+      price: "₹2,599",
+      thumbnail: "🔬",
+      category: "Biology",
     },
   ]
 
-  const featuredCourses = courses.slice(0, 2)
+  const nearbyTutors = [
+    {
+      id: 1,
+      name: "Rajesh Kumar",
+      subject: "Mathematics",
+      rating: 4.9,
+      distance: "0.5 km",
+      price: "₹500/hr",
+      avatar: "👨‍🏫",
+    },
+    {
+      id: 2,
+      name: "Priya Sharma",
+      subject: "Physics",
+      rating: 4.8,
+      distance: "1.2 km",
+      price: "₹600/hr",
+      avatar: "👩‍🏫",
+    },
+  ]
+
   const filteredCourses = courses.filter(
     (course) =>
       (selectedCategory === "All" || course.category === selectedCategory) &&
@@ -81,180 +83,105 @@ export default function CourseExplore() {
   )
 
   return (
-    <SafeAreaView className="flex-1 bg-[--background-color]">
-      <ScrollView className="flex-1" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView className="flex-1">
         {/* Header */}
-        <View className="bg-[--card-background-color]  border-b border-[--card-border-color] px-6 py-4">
-          <Typography className="mt-8 text-[--text-color] text-2xl font-bold mb-2">
-            Explore Courses
-          </Typography>
-          <Typography className="text-[--text-color] opacity-70">
-            Discover new skills and advance your learning
-          </Typography>
-        </View>
+        <View className="bg-white px-6 py-6 border-b border-gray-100">
+          <Text className="text-2xl font-bold text-gray-900 mb-4">Explore Courses</Text>
 
-        {/* Search Bar */}
-        <View className="px-6 py-4">
-          <View className="bg-[--card-background-color] border border-[--card-border-color] rounded-xl px-4 py-3 flex-row items-center">
-            <Typography className="text-[--text-color] opacity-50 mr-3">
-              🔍
-            </Typography>
+          {/* Search Bar */}
+          <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-3">
+            <Ionicons name="search-outline" size={20} color="#6B7280" />
             <TextInput
-              placeholder="Search courses..."
-              placeholderTextColor="rgba(var(--text-color), 0.5)"
+              placeholder="Search courses, tutors..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="flex-1 text-[--text-color]"
+              className="flex-1 ml-3 text-gray-900"
             />
           </View>
         </View>
 
-        {/* Categories */}
-        <View className="px-6 mb-4">
-          <Typography className="text-[--text-color] text-lg font-semibold mb-3">
-            Categories
-          </Typography>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View className="p-6">
+          {/* Categories */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
             <View className="flex-row gap-3">
               {categories.map((category) => (
                 <TouchableOpacity
                   key={category}
                   onPress={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full border ${
-                    selectedCategory === category
-                      ? "bg-[--primary-color] border-[--primary-color]"
-                      : "bg-[--card-background-color] border-[--card-border-color]"
+                  className={`px-4 py-2 rounded-full ${
+                    selectedCategory === category ? "bg-blue-600" : "bg-white border border-gray-200"
                   }`}
                 >
-                  <Typography
-                    className={selectedCategory === category ? "text-white" : "text-[--text-color]"}
-                  >
+                  <Text className={`font-medium ${selectedCategory === category ? "text-white" : "text-gray-700"}`}>
                     {category}
-                  </Typography>
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </ScrollView>
-        </View>
 
-        {/* Featured Courses */}
-        <View className="px-6 mb-6">
-          <Typography className="text-[--text-color] text-lg font-semibold mb-3">
-            Featured Courses
-          </Typography>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row gap-4">
-              {featuredCourses.map((course) => (
-                <TouchableOpacity
-                  key={course.id}
-                  className="bg-[--card-background-color] border border-[--card-border-color] rounded-2xl shadow-md w-80"
-                >
-                  <Image source={{ uri: course.image }} className="w-full h-32 rounded-t-2xl" resizeMode="cover" />
-                  <View className="p-4">
-                    <Typography className="text-[--text-color] text-lg font-semibold mb-2">
-                      {course.title}
-                    </Typography>
-                    <Typography className="text-[--text-color] opacity-70 mb-2">
-                      by {course.instructor}
-                    </Typography>
-                    <View className="flex-row items-center justify-between mb-3">
-                      <View className="flex-row items-center">
-                        <Typography className="text-yellow-500 mr-1 text-sm">
-                          ⭐ {course.rating}
-                        </Typography>
-                        <Typography className="text-[--text-color] opacity-50 text-sm">
-                          ({course.students} students)
-                        </Typography>
+          {/* Featured Courses */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-gray-900 mb-4">Featured Courses</Text>
+            <View className="space-y-4">
+              {filteredCourses.map((course) => (
+                <TouchableOpacity key={course.id}>
+                  <Card className="p-4">
+                    <View className="flex-row">
+                      <View className="w-16 h-16 bg-gray-100 rounded-lg items-center justify-center mr-4">
+                        <Text className="text-2xl">{course.thumbnail}</Text>
                       </View>
-                      <Typography className="text-[--primary-color] text-lg font-semibold">
-                        ${course.price}
-                      </Typography>
+                      <View className="flex-1">
+                        <Text className="font-semibold text-gray-900 mb-1">{course.title}</Text>
+                        <Text className="text-gray-600 text-sm mb-2">{course.instructor}</Text>
+                        <View className="flex-row items-center justify-between">
+                          <View className="flex-row items-center">
+                            <Ionicons name="star" size={16} color="#F59E0B" />
+                            <Text className="text-sm text-gray-600 ml-1">{course.rating}</Text>
+                            <Text className="text-sm text-gray-500 ml-2">({course.students} students)</Text>
+                          </View>
+                          <Text className="font-bold text-blue-600">{course.price}</Text>
+                        </View>
+                      </View>
                     </View>
-                    <View className="flex-row items-center justify-between">
-                      <Typography className="text-[--text-color] opacity-70 text-sm">
-                        {course.duration} • {course.level}
-                      </Typography>
-                      {course.progress > 0 && (
-                        <Typography className="text-green-500 text-sm">
-                          {course.progress}% Complete
-                        </Typography>
-                      )}
-                    </View>
-                  </View>
+                  </Card>
                 </TouchableOpacity>
               ))}
             </View>
-          </ScrollView>
-        </View>
-
-        {/* Filters */}
-        <View className="px-6 mb-4">
-          <View className="flex-row items-center justify-between mb-3">
-            <Typography className="text-[--text-color] text-lg font-semibold">
-              All Courses
-            </Typography>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View className="flex-row gap-2">
-                {filters.map((filter) => (
-                  <TouchableOpacity
-                    key={filter}
-                    onPress={() => setSelectedFilter(filter)}
-                    className={`px-3 py-1 rounded-full ${
-                      selectedFilter === filter
-                        ? "bg-[--primary-color]"
-                        : "bg-[--card-background-color] border border-[--card-border-color]"
-                    }`}
-                  >
-                    <Typography
-                      className={`text-sm ${selectedFilter === filter ? "text-white" : "text-[--text-color]"}`}
-                    >
-                      {filter}
-                    </Typography>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
           </View>
-        </View>
 
-        {/* Course Grid */}
-        <View className="px-6 pb-6">
-          <View className="flex-row flex-wrap justify-between">
-            {filteredCourses.map((course) => (
-              <TouchableOpacity
-                key={course.id}
-                className="bg-[--card-background-color] border border-[--card-border-color] rounded-2xl shadow-md w-[48%] mb-4"
-              >
-                <Image source={{ uri: course.image }} className="w-full h-24 rounded-t-2xl" resizeMode="cover" />
-                <View className="p-3">
-                  <Typography className="text-[--text-color] mb-1">
-                    {course.title}
-                  </Typography>
-                  <Typography className="text-[--text-color] opacity-70 mb-2 text-sm">
-                    {course.instructor}
-                  </Typography>
-                  <View className="flex-row items-center justify-between mb-2">
-                    <Typography className="text-yellow-500 text-sm">
-                      ⭐ {course.rating}
-                    </Typography>
-                    <Typography className="text-[--primary-color] text-sm">
-                      ${course.price}
-                    </Typography>
-                  </View>
-                  {course.progress > 0 && (
-                    <View className="bg-gray-200 rounded-full h-1 mb-2">
-                      <View
-                        className="bg-[--primary-color] h-1 rounded-full"
-                        style={{ width: `${course.progress}%` }}
-                      />
-                    </View>
-                  )}
-                  <Typography className="text-[--text-color] opacity-50 text-sm">
-                    {course.duration} • {course.level}
-                  </Typography>
-                </View>
+          {/* Nearby Tutors */}
+          <View>
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-lg font-semibold text-gray-900">Nearby Tutors</Text>
+              <TouchableOpacity>
+                <Text className="text-blue-600 font-medium">View All</Text>
               </TouchableOpacity>
-            ))}
+            </View>
+            <View className="space-y-3">
+              {nearbyTutors.map((tutor) => (
+                <TouchableOpacity key={tutor.id}>
+                  <Card className="p-4">
+                    <View className="flex-row items-center">
+                      <View className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center mr-3">
+                        <Text className="text-xl">{tutor.avatar}</Text>
+                      </View>
+                      <View className="flex-1">
+                        <Text className="font-semibold text-gray-900">{tutor.name}</Text>
+                        <Text className="text-gray-600 text-sm">{tutor.subject}</Text>
+                        <View className="flex-row items-center mt-1">
+                          <Ionicons name="star" size={14} color="#F59E0B" />
+                          <Text className="text-sm text-gray-600 ml-1">{tutor.rating}</Text>
+                          <Text className="text-sm text-gray-500 ml-2">• {tutor.distance}</Text>
+                        </View>
+                      </View>
+                      <Text className="font-bold text-blue-600">{tutor.price}</Text>
+                    </View>
+                  </Card>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
       </ScrollView>
