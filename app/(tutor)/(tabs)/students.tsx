@@ -1,340 +1,195 @@
 "use client"
 
+import { View, ScrollView, TouchableOpacity, SafeAreaView, RefreshControl, TextInput } from "react-native"
 import { useState } from "react"
-import { View, ScrollView, RefreshControl, SafeAreaView, TouchableOpacity, Modal, TextInput } from "react-native"
 import { Typography } from "@/components/Typography"
 
-export default function StudentManagement() {
+export default function Students() {
   const [refreshing, setRefreshing] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
-  const [showStudentModal, setShowStudentModal] = useState(false)
-  const [selectedStudent, setSelectedStudent] = useState<any>(null)
 
   const onRefresh = () => {
     setRefreshing(true)
-    setTimeout(() => setRefreshing(false), 2000)
+    setTimeout(() => setRefreshing(false), 1000)
   }
 
   const students = [
     {
       id: 1,
-      name: "Alex Johnson",
-      email: "alex.johnson@email.com",
-      avatar: "👨‍🎓",
-      enrolledClasses: ["Advanced Math", "Physics"],
-      totalClasses: 24,
-      attendedClasses: 22,
-      averageScore: 87,
+      name: "John Doe",
+      course: "Mathematics",
+      attendance: 85,
+      performance: "Excellent",
       lastActive: "2 hours ago",
-      status: "active",
-      joinDate: "2024-01-15",
-      performance: "excellent",
-      assignments: { completed: 18, total: 20 },
-      tests: { passed: 8, total: 10 },
+      avatar: "JD",
     },
     {
       id: 2,
-      name: "Maria Garcia",
-      email: "maria.garcia@email.com",
-      avatar: "👩‍🎓",
-      enrolledClasses: ["Chemistry", "Biology"],
-      totalClasses: 18,
-      attendedClasses: 16,
-      averageScore: 92,
+      name: "Sarah Wilson",
+      course: "Physics",
+      attendance: 92,
+      performance: "Good",
       lastActive: "1 day ago",
-      status: "active",
-      joinDate: "2024-02-01",
-      performance: "excellent",
-      assignments: { completed: 15, total: 16 },
-      tests: { passed: 7, total: 8 },
+      avatar: "SW",
     },
     {
       id: 3,
-      name: "David Chen",
-      email: "david.chen@email.com",
-      avatar: "👨‍🎓",
-      enrolledClasses: ["Programming", "Math"],
-      totalClasses: 20,
-      attendedClasses: 15,
-      averageScore: 78,
-      lastActive: "3 days ago",
-      status: "inactive",
-      joinDate: "2024-01-20",
-      performance: "good",
-      assignments: { completed: 12, total: 18 },
-      tests: { passed: 6, total: 9 },
+      name: "Mike Johnson",
+      course: "Chemistry",
+      attendance: 78,
+      performance: "Average",
+      lastActive: "3 hours ago",
+      avatar: "MJ",
+    },
+    {
+      id: 4,
+      name: "Emily Davis",
+      course: "Mathematics",
+      attendance: 95,
+      performance: "Excellent",
+      lastActive: "30 minutes ago",
+      avatar: "ED",
     },
   ]
 
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch =
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesFilter = selectedFilter === "all" || student.status === selectedFilter
-    return matchesSearch && matchesFilter
-  })
+  const filters = [
+    { id: "all", label: "All Students" },
+    { id: "mathematics", label: "Mathematics" },
+    { id: "physics", label: "Physics" },
+    { id: "chemistry", label: "Chemistry" },
+  ]
 
   const getPerformanceColor = (performance: string) => {
     switch (performance) {
-      case "excellent":
-        return "text-green-600"
-      case "good":
-        return "text-blue-600"
-      case "average":
-        return "text-yellow-600"
-      case "poor":
-        return "text-red-600"
+      case "Excellent":
+        return "bg-green-100 text-green-600"
+      case "Good":
+        return "bg-blue-100 text-blue-600"
+      case "Average":
+        return "bg-yellow-100 text-yellow-600"
+      case "Poor":
+        return "bg-red-100 text-red-600"
       default:
-        return "text-muted-foreground"
+        return "bg-gray-100 text-gray-600"
     }
   }
 
-  const getStatusColor = (status: string) => {
-    return status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+  const getAttendanceColor = (attendance: number) => {
+    if (attendance >= 90) return "text-green-600"
+    if (attendance >= 75) return "text-blue-600"
+    if (attendance >= 60) return "text-yellow-600"
+    return "text-red-600"
   }
 
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter = selectedFilter === "all" || student.course.toLowerCase() === selectedFilter
+    return matchesSearch && matchesFilter
+  })
+
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="px-4 py-6">
-        <Typography className="text-2xl font-bold text-foreground mb-6">Student Management</Typography>
-
-        {/* Search and Filter */}
-        <View className="mb-6">
-          <TextInput
-            className="bg-card border border-border rounded-lg px-4 py-3 text-foreground mb-4"
-            placeholder="Search students..."
-            placeholderTextColor="#666"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-2">
-            {[
-              { key: "all", label: "All Students" },
-              { key: "active", label: "Active" },
-              { key: "inactive", label: "Inactive" },
-              { key: "excellent", label: "Top Performers" },
-              { key: "poor", label: "Need Attention" },
-            ].map((filter) => (
-              <TouchableOpacity
-                key={filter.key}
-                className={`px-4 py-2 rounded-full ${selectedFilter === filter.key ? "bg-primary" : "bg-muted"}`}
-                onPress={() => setSelectedFilter(filter.key)}
-              >
-                <Typography
-                  className={`text-sm font-medium ${
-                    selectedFilter === filter.key ? "text-primary-foreground" : "text-muted-foreground"
-                  }`}
-                >
-                  {filter.label}
-                </Typography>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Stats Overview */}
-        <View className="flex-row gap-3 mb-6">
-          <View className="flex-1 bg-card p-4 rounded-xl border border-border">
-            <Typography className="text-2xl font-bold text-foreground">{students.length}</Typography>
-            <Typography className="text-sm text-muted-foreground">Total Students</Typography>
-          </View>
-          <View className="flex-1 bg-card p-4 rounded-xl border border-border">
-            <Typography className="text-2xl font-bold text-green-600">
-              {students.filter((s) => s.status === "active").length}
-            </Typography>
-            <Typography className="text-sm text-muted-foreground">Active</Typography>
-          </View>
-          <View className="flex-1 bg-card p-4 rounded-xl border border-border">
-            <Typography className="text-2xl font-bold text-foreground">
-              {Math.round(students.reduce((acc, s) => acc + s.averageScore, 0) / students.length)}%
-            </Typography>
-            <Typography className="text-sm text-muted-foreground">Avg Score</Typography>
-          </View>
-        </View>
-      </View>
-
+    <SafeAreaView className="flex-1 bg-(--background-color)">
       <ScrollView
-        className="flex-1 px-4"
+        className="flex-1 bg-(--background-color)"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {filteredStudents.map((student) => (
-          <TouchableOpacity
-            key={student.id}
-            className="bg-card p-4 rounded-xl border border-border mb-4"
-            onPress={() => {
-              setSelectedStudent(student)
-              setShowStudentModal(true)
-            }}
-          >
-            <View className="flex-row items-start">
-              <View className="w-12 h-12 bg-muted rounded-full items-center justify-center mr-4">
-                <Typography className="text-2xl">{student.avatar}</Typography>
-              </View>
+        {/* Header */}
+        <View className="bg-[--card-background-color] p-4 border-b border-[--card-border-color]">
+          <Typography className="mt-8 text-[--text-color] text-xl">Students</Typography>
+          <Typography className="text-[--nav-text-color] text-base">{students.length} enrolled students</Typography>
+        </View>
 
-              <View className="flex-1">
-                <View className="flex-row justify-between items-start mb-2">
-                  <View>
-                    <Typography className="text-lg font-semibold text-foreground">{student.name}</Typography>
-                    <Typography className="text-sm text-muted-foreground">{student.email}</Typography>
-                  </View>
-                  <View className={`px-2 py-1 rounded-full ${getStatusColor(student.status)}`}>
-                    <Typography className="text-xs font-medium">{student.status}</Typography>
-                  </View>
-                </View>
+        <View className="p-4 gap-4">
+          {/* Search Bar */}
+          <View className="bg-[--card-background-color] rounded-2xl border border-[--card-border-color] shadow-md">
+            <TextInput
+              className="p-4 text-[--text-color] text-base"
+              placeholder="Search students..."
+              placeholderTextColor="var(--nav-text-color)"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
 
-                <View className="flex-row justify-between items-center mb-3">
-                  <Typography className="text-sm text-muted-foreground">
-                    {student.enrolledClasses.join(", ")}
+          {/* Filter Tabs */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-2">
+            <View className="flex-row gap-2">
+              {filters.map((filter) => (
+                <TouchableOpacity
+                  key={filter.id}
+                  onPress={() => setSelectedFilter(filter.id)}
+                  className={`px-4 py-2 rounded-xl ${
+                    selectedFilter === filter.id
+                      ? "bg-[--primary-color]"
+                      : "bg-[--card-background-color] border border-[--card-border-color]"
+                  }`}
+                >
+                  <Typography
+                    className={`text-sm ${
+                      selectedFilter === filter.id ? "text-white font-poppins-semibold" : "text-[--nav-text-color]"
+                    }`}
+                  >
+                    {filter.label}
                   </Typography>
-                  <Typography className={`text-sm font-medium ${getPerformanceColor(student.performance)}`}>
-                    {student.averageScore}% avg
-                  </Typography>
-                </View>
-
-                <View className="flex-row justify-between items-center">
-                  <View className="flex-row gap-4">
-                    <View>
-                      <Typography className="text-xs text-muted-foreground">Attendance</Typography>
-                      <Typography className="text-sm font-medium text-foreground">
-                        {student.attendedClasses}/{student.totalClasses}
-                      </Typography>
-                    </View>
-                    <View>
-                      <Typography className="text-xs text-muted-foreground">Assignments</Typography>
-                      <Typography className="text-sm font-medium text-foreground">
-                        {student.assignments.completed}/{student.assignments.total}
-                      </Typography>
-                    </View>
-                    <View>
-                      <Typography className="text-xs text-muted-foreground">Tests</Typography>
-                      <Typography className="text-sm font-medium text-foreground">
-                        {student.tests.passed}/{student.tests.total}
-                      </Typography>
-                    </View>
-                  </View>
-                  <Typography className="text-xs text-muted-foreground">{student.lastActive}</Typography>
-                </View>
-              </View>
+                </TouchableOpacity>
+              ))}
             </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+          </ScrollView>
 
-      {/* Student Detail Modal */}
-      <Modal visible={showStudentModal} transparent animationType="slide">
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-card rounded-t-3xl p-6 max-h-[80%]">
-            <View className="flex-row justify-between items-center mb-6">
-              <Typography className="text-xl font-semibold text-foreground">Student Details</Typography>
-              <TouchableOpacity onPress={() => setShowStudentModal(false)}>
-                <Typography className="text-primary">Close</Typography>
-              </TouchableOpacity>
-            </View>
-
-            {selectedStudent && (
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Student Header */}
-                <View className="flex-row items-center mb-6">
-                  <View className="w-16 h-16 bg-muted rounded-full items-center justify-center mr-4">
-                    <Typography className="text-3xl">{selectedStudent.avatar}</Typography>
+          {/* Students List */}
+          <View className="gap-3">
+            {filteredStudents.map((student) => (
+              <View
+                key={student.id}
+                className="bg-[--card-background-color] p-4 rounded-2xl border border-[--card-border-color] shadow-md"
+              >
+                <View className="flex-row items-center gap-4 mb-3">
+                  <View className="w-12 h-12 bg-[--primary-color] rounded-full items-center justify-center">
+                    <Typography className="text-white font-poppins-semibold">{student.avatar}</Typography>
                   </View>
                   <View className="flex-1">
-                    <Typography className="text-xl font-bold text-foreground">{selectedStudent.name}</Typography>
-                    <Typography className="text-sm text-muted-foreground">{selectedStudent.email}</Typography>
-                    <Typography className="text-xs text-muted-foreground mt-1">
-                      Joined {selectedStudent.joinDate}
+                    <Typography className="text-[--text-color] text-lg font-poppins-semibold">
+                      {student.name}
+                    </Typography>
+                    <Typography className="text-[--nav-text-color] text-base">{student.course}</Typography>
+                    <Typography className="text-[--nav-text-color] text-sm">
+                      Last active: {student.lastActive}
                     </Typography>
                   </View>
-                </View>
-
-                {/* Performance Metrics */}
-                <View className="bg-muted p-4 rounded-xl mb-6">
-                  <Typography className="text-lg font-semibold text-foreground mb-4">Performance Overview</Typography>
-                  <View className="flex-row justify-between mb-4">
-                    <View className="items-center">
-                      <Typography className="text-2xl font-bold text-foreground">
-                        {selectedStudent.averageScore}%
-                      </Typography>
-                      <Typography className="text-xs text-muted-foreground">Average Score</Typography>
-                    </View>
-                    <View className="items-center">
-                      <Typography className="text-2xl font-bold text-foreground">
-                        {Math.round((selectedStudent.attendedClasses / selectedStudent.totalClasses) * 100)}%
-                      </Typography>
-                      <Typography className="text-xs text-muted-foreground">Attendance</Typography>
-                    </View>
-                    <View className="items-center">
-                      <Typography className="text-2xl font-bold text-foreground">
-                        {Math.round((selectedStudent.assignments.completed / selectedStudent.assignments.total) * 100)}%
-                      </Typography>
-                      <Typography className="text-xs text-muted-foreground">Assignments</Typography>
-                    </View>
-                  </View>
-
-                  {/* Progress Bars */}
-                  <View className="gap-3">
-                    <View>
-                      <View className="flex-row justify-between mb-1">
-                        <Typography className="text-xs text-muted-foreground">Class Attendance</Typography>
-                        <Typography className="text-xs text-muted-foreground">
-                          {selectedStudent.attendedClasses}/{selectedStudent.totalClasses}
-                        </Typography>
-                      </View>
-                      <View className="h-2 bg-border rounded-full">
-                        <View
-                          className="h-2 bg-green-500 rounded-full"
-                          style={{
-                            width: `${(selectedStudent.attendedClasses / selectedStudent.totalClasses) * 100}%`,
-                          }}
-                        />
-                      </View>
-                    </View>
-
-                    <View>
-                      <View className="flex-row justify-between mb-1">
-                        <Typography className="text-xs text-muted-foreground">Assignment Completion</Typography>
-                        <Typography className="text-xs text-muted-foreground">
-                          {selectedStudent.assignments.completed}/{selectedStudent.assignments.total}
-                        </Typography>
-                      </View>
-                      <View className="h-2 bg-border rounded-full">
-                        <View
-                          className="h-2 bg-blue-500 rounded-full"
-                          style={{
-                            width: `${(selectedStudent.assignments.completed / selectedStudent.assignments.total) * 100}%`,
-                          }}
-                        />
-                      </View>
-                    </View>
+                  <View className={`px-3 py-1 rounded-xl ${getPerformanceColor(student.performance)}`}>
+                    <Typography className="text-sm">{student.performance}</Typography>
                   </View>
                 </View>
 
-                {/* Enrolled Classes */}
-                <View className="mb-6">
-                  <Typography className="text-lg font-semibold text-foreground mb-3">Enrolled Classes</Typography>
-                  {selectedStudent.enrolledClasses.map((className: string, index: number) => (
-                    <View key={index} className="bg-muted p-3 rounded-lg mb-2">
-                      <Typography className="text-sm font-medium text-foreground">{className}</Typography>
-                    </View>
-                  ))}
+                <View className="bg-[--field-background-color] p-3 rounded-xl mb-3">
+                  <View className="flex-row justify-between items-center">
+                    <Typography className="text-[--text-color] text-base">Attendance</Typography>
+                    <Typography className={`text-base font-poppins-semibold ${getAttendanceColor(student.attendance)}`}>
+                      {student.attendance}%
+                    </Typography>
+                  </View>
+                  <View className="bg-gray-200 h-2 rounded-full mt-2">
+                    <View
+                      className={`h-2 rounded-full ${student.attendance >= 90 ? "bg-green-500" : student.attendance >= 75 ? "bg-blue-500" : student.attendance >= 60 ? "bg-yellow-500" : "bg-red-500"}`}
+                      style={{ width: `${student.attendance}%` }}
+                    />
+                  </View>
                 </View>
 
-                {/* Action Buttons */}
                 <View className="flex-row gap-3">
-                  <TouchableOpacity className="flex-1 bg-primary py-3 rounded-lg">
-                    <Typography className="text-center text-primary-foreground font-medium">Send Message</Typography>
+                  <TouchableOpacity className="flex-1 bg-[--primary-color] py-3 rounded-xl">
+                    <Typography className="text-white text-center font-poppins-semibold">View Profile</Typography>
                   </TouchableOpacity>
-                  <TouchableOpacity className="flex-1 bg-muted py-3 rounded-lg">
-                    <Typography className="text-center text-foreground font-medium">View Progress</Typography>
+                  <TouchableOpacity className="flex-1 border border-[--card-border-color] py-3 rounded-xl">
+                    <Typography className="text-[--text-color] text-center">Message</Typography>
                   </TouchableOpacity>
                 </View>
-              </ScrollView>
-            )}
+              </View>
+            ))}
           </View>
         </View>
-      </Modal>
+      </ScrollView>
     </SafeAreaView>
   )
 }
