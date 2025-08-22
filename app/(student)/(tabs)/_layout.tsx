@@ -2,7 +2,7 @@
 import { Tabs } from "expo-router"
 import { Trophy, List, BookA, Telescope, LayoutDashboard } from "lucide-react-native"
 
-import {DrawerToggle} from "@/components/DrawerToogle"
+import { DrawerToggle } from "@/components/DrawerToogle"
 
 export default function StudentTabsLayout() {
   return (
@@ -25,7 +25,7 @@ export default function StudentTabsLayout() {
           height: 80,
         },
         tabBarIconStyle: {
-       
+
           marginBottom: 0,
           marginTop: 0,
         },
@@ -40,7 +40,7 @@ export default function StudentTabsLayout() {
         tabBarActiveBackgroundColor: "#f3f4f6",
         tabBarInactiveBackgroundColor: "#ffffffff",
 
-        
+
       }}
     >
       <Tabs.Screen
@@ -64,7 +64,7 @@ export default function StudentTabsLayout() {
           tabBarIcon: ({ color, size }) => <BookA color={color} size={size} />,
         }}
       />
-  
+
       <Tabs.Screen
         name="mock/index"
         options={{
@@ -77,6 +77,61 @@ export default function StudentTabsLayout() {
         options={{
           title: "Progress",
           tabBarIcon: ({ color, size }) => <Trophy color={color} size={size} />,
+        }}
+      />
+
+      {/* hidden */}
+
+      <Tabs.Screen
+        name="payment/index"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+         
+        }}
+      />
+
+      
+      <Tabs.Screen
+        name="profile"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+          
+        }}
+      />
+       <Tabs.Screen
+        name="session/index"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+        
+        }}
+      />
+      <Tabs.Screen
+        name="support/index"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+        
+        }}
+      />
+
+      <Tabs.Screen
+        name="assesment/index"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+        
+        }}
+      />
+        <Tabs.Screen
+        name="liveClassJoin/index"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+        
+        }}
+      />
+        <Tabs.Screen
+        name="course/[courseCode]"
+        options={{
+         tabBarItemStyle: { display: "none" }, // Hide from tab bar
+        
         }}
       />
     </Tabs>

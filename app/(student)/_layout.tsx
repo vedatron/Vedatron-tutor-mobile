@@ -68,7 +68,7 @@
 
 
 
-import { Redirect } from "expo-router"
+import { Redirect ,useRouter} from "expo-router"
 import { useAuthStore } from "../../lib/stores/auth"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { Drawer } from "expo-router/drawer"
@@ -80,6 +80,7 @@ import {
 import { Home, User, CreditCard, BookOpen, LogOut, Settings, BadgeInfo } from "lucide-react-native"
 
 export default function StudentLayout() {
+  const router= useRouter()
   const { user, logout } = useAuthStore()
 
   if (!user || user.role !== "STUDENT") {
@@ -91,7 +92,33 @@ export default function StudentLayout() {
     return (
       <DrawerContentScrollView {...props}>
         {/* Default list = Home/Session/Payment/Profile (with icons) */}
-        <DrawerItemList {...props} />
+        {/* <DrawerItemList {...props} /> */}
+
+        <DrawerItem
+          label="Home"
+          icon={({ color, size }) => <Home color={color} size={size} />}
+          onPress={() => props.navigation.navigate("(tabs)/dashboard")}
+        />
+        <DrawerItem
+          label="Session"
+          icon={({ color, size }) => <BadgeInfo color={color} size={size} />}
+          onPress={() => props.navigation.navigate("(tabs)/session")}
+        />
+        <DrawerItem
+          label="Payment"
+          icon={({ color, size }) => <CreditCard color={color} size={size} />}
+          onPress={() => props.navigation.navigate("(tabs)/payment/index")}
+        />
+        <DrawerItem
+          label="Profile"
+          icon={({ color, size }) => <User color={color} size={size} />}
+          onPress={() => props.navigation.navigate("(tabs)/profile")}
+        />
+
+
+
+
+
 
         {/* Divider */}
         <DrawerItem
@@ -124,81 +151,12 @@ export default function StudentLayout() {
           drawerInactiveTintColor: "#333",
         }}
       >
-        <Drawer.Screen
-          name="dashboard"
-          options={{
-            drawerLabel: "Home",
-            drawerIcon: ({ color, size }) => <Home color={color} size={size} />,
-          }}
-        />
-        <Drawer.Screen
-          name="session/index"
-          options={{
-            drawerLabel: "Session",
-            drawerIcon: ({ color, size }) => <BookOpen color={color} size={size} />,
-          }}
-        />
-        <Drawer.Screen
-          name="payment/index"
-          options={{
-            drawerLabel: "Payment",
-            drawerIcon: ({ color, size }) => <CreditCard color={color} size={size} />,
-          }}
-        />
-        <Drawer.Screen
-          name="profile"
-          options={{
-            drawerLabel: "Profile",
-            drawerIcon: ({ color, size }) => <User color={color} size={size} />,
-          }}
-        />
-
-        <Drawer.Screen
-          name="support/index"
-          options={{
-            drawerLabel: "Support",
-            drawerIcon: ({ color, size }) => <BadgeInfo color={color} size={size} />,
-          }}
-        />
-
-
-
-
-
-
-
-
-        <Drawer.Screen
-          name="assesment/index"
-          options={{
-
-            drawerItemStyle: { display: "none" }, // Hide from drawer
-
-          }}
-        />
-        <Drawer.Screen
-          name="liveClassJoin/index"
-          options={{
-
-            drawerItemStyle: { display: "none" }, // Hide from drawer
-
-          }}
-        />
-        <Drawer.Screen
-          name="course/[courseCode]"
-          options={{
-
-            drawerItemStyle: { display: "none" }, // Hide from drawer
-
-          }}
-        />
 
         <Drawer.Screen
           name="(tabs)"
           options={{
-
-            drawerItemStyle: { display: "none" }, // Hide from drawer
-
+            drawerLabel: "Home",
+            drawerIcon: ({ color, size }) => <Home color={color} size={size} />,
           }}
         />
       </Drawer>
